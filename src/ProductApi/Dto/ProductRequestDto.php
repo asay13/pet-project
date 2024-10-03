@@ -2,7 +2,7 @@
 
 namespace App\ProductApi\Dto;
 
-use Symfony\Component\Validator\Constraints as Assert;
+
 
 class ProductRequestDto
 {

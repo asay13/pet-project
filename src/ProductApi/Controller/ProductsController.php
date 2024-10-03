@@ -5,6 +5,7 @@ namespace App\ProductApi\Controller;
 use App\ProductApi\Dto\ProductRequestDto;
 use App\ProductApi\Entity\Product;
 use App\ProductApi\Providers\RequestDtoToProductEntityProvider;
+use App\ProductApi\Service\ProductService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -16,11 +17,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ProductsController
 {
 
-    //private ValidatorInterface $validator;
+    private ValidatorInterface $validator;
+    private ProductService $productService;
 
-    public function __constructor(): void
+    public function __construct(
+        ValidatorInterface $validator,
+        ProductService $productService
+    )
     {
-        //$this->validator = $validator;
+        $this->validator = $validator;
+        $this->productService = $productService;
     }
 //    #[Route(path: '/test-products', name: 'test_products')]
 //    public function test()
@@ -49,38 +55,28 @@ class ProductsController
 //        }
 //    }
 
-    #[Route(path: '/products', name: 'get_products')]
+    #[Route(path: '/products/list', name: 'get_products')]
     public function getProducts(ManagerRegistry $entityManager)
     {
-        $product = $entityManager->getRepository(Product::class)->findAll();
+        $productList = $this->productService->getProductList();
+        return new Response(json_encode($productList));
 
-        echo phpinfo();
     }
 
     #[Route(path: '/products/create', name: 'create_product')]
     public function createProduct(
-        ValidatorInterface $validator,
-        ManagerRegistry $doctrine,
-        #[MapRequestPayload] \App\ProductApi\Dto\ProductRequestDto $productReview
+        #[MapRequestPayload] ProductRequestDto $productReview
         ): Response
     {
 
-        $errors = $validator->validate($productReview);
+        $errors = $this->validator->validate($productReview);
 
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
                 return new Response($errorsString);
             }
-        $provider = new RequestDtoToProductEntityProvider();
-        $product = $provider->provide($productReview);
-        $entityManager = $doctrine->getManager();
 
-        // сообщить Doctrine, что вы хотите (в итоге) сохранить Продукт (пока без запросов)
-        $entityManager->persist($product);
-
-        // действительно выполнить запросы (например, запрос INSERT)
-        $entityManager->flush();
-
+        $product = $this->productService->createProduct($productReview);
         return new Response('Saved new product with id ' . $product->getId());
     }
 }
