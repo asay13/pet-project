@@ -56,7 +56,7 @@ class ProductsController
 //    }
 
     #[Route(path: '/products/list', name: 'get_products')]
-    public function getProducts(ManagerRegistry $entityManager)
+    public function getProducts()
     {
         $productList = $this->productService->getProductList();
         return new Response(json_encode($productList));
@@ -78,5 +78,13 @@ class ProductsController
 
         $product = $this->productService->createProduct($productReview);
         return new Response('Saved new product with id ' . $product->getId());
+    }
+
+    #[Route(path: '/products/list/{code}', name: 'get_product_by_code')]
+    public function getProductByCode(string $code)
+    {
+        $productList = $this->productService->getProductList();
+        return new Response(json_encode($productList));
+
     }
 }

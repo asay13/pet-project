@@ -38,4 +38,14 @@ class ProductService
         }
         return new ProductListResponseDto($arrProductList);
     }
+    public function getProductByCode(string $code) :ProductListResponseDto
+    {
+        $productList = $this->managerRegistry->getRepository(Product::class)->findAll();;
+        $provider = new ProductToResponseDtoProvider();
+        $arrProductList = [];
+        foreach ($productList as $product){
+            $arrProductList[] = $provider->provide($product);
+        }
+        return new ProductListResponseDto($arrProductList);
+    }
 }
