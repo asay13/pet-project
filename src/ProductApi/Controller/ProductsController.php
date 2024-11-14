@@ -80,10 +80,10 @@ class ProductsController
         return new Response('Saved new product with id ' . $product->getId());
     }
 
-    #[Route(path: '/products/list/{code}', name: 'get_product_by_code')]
+    #[Route(path: '/products/{code}', name: 'get_product_by_code')]
     public function getProductByCode(string $code)
     {
-        $productList = $this->productService->getProductList();
+        $productList = $this->productService->getProductByCode($code);
         return new Response(json_encode($productList));
 
     }

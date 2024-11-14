@@ -2,7 +2,7 @@
 
 namespace App\ProductApi\Dto;
 
-class ProductResponseDto
+readonly class ProductResponseDto
 {
     public function __construct(
         public string $name,

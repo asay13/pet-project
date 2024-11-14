@@ -2,7 +2,9 @@
 
 namespace App\ProductApi\Service;
 
+use App\ProductApi\Dto\ExceptionDto;
 use App\ProductApi\Dto\ProductListResponseDto;
+use App\ProductApi\Dto\ProductResponseDto;
 use App\ProductApi\Entity\Product;
 use App\ProductApi\Providers\ProductToResponseDtoProvider;
 use App\ProductApi\Providers\RequestDtoToProductEntityProvider;
@@ -28,24 +30,28 @@ class ProductService
         return $product;
     }
 
-    public function getProductList() :ProductListResponseDto
+    public function getProductList() :ProductListResponseDto|ExceptionDto
     {
-        $productList = $this->managerRegistry->getRepository(Product::class)->findAll();;
+        $productList = $this->managerRegistry->getRepository(Product::class)->findAll();
         $provider = new ProductToResponseDtoProvider();
         $arrProductList = [];
         foreach ($productList as $product){
             $arrProductList[] = $provider->provide($product);
         }
-        return new ProductListResponseDto($arrProductList);
+        if (!empty($arrProductList)) {
+            return new ProductListResponseDto($arrProductList);
+        }
+        return new ExceptionDto("Продукты не найдены");
     }
-    public function getProductByCode(string $code) :ProductListResponseDto
+    public function getProductByCode(string $code) :ProductResponseDto|ExceptionDto
     {
-        $productList = $this->managerRegistry->getRepository(Product::class)->findAll();;
+        $product = $this->managerRegistry->getRepository(Product::class)
+            ->findOneBy(['code' => $code]);
         $provider = new ProductToResponseDtoProvider();
-        $arrProductList = [];
-        foreach ($productList as $product){
-            $arrProductList[] = $provider->provide($product);
+
+        if (!empty($product)) {
+            return $provider->provide($product);
         }
-        return new ProductListResponseDto($arrProductList);
+       return new ExceptionDto("Продукт не был найден");
     }
 }

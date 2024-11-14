@@ -4,7 +4,7 @@ namespace App\ProductApi\Dto;
 
 
 
-class ProductRequestDto
+readonly class ProductRequestDto
 {
     public function __construct(
         #[Assert\NotBlank]
