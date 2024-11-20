@@ -8,7 +8,7 @@ services:
     build:
       dockerfile: ./docker/php.Dockerfile
     ports:
-      - 8000:8000
+      - 8001:8000
     #для ubuntu 20.04 https://bugzilla.redhat.com/show_bug.cgi?id=1990469#c9
     security_opt:
       - seccomp:unconfined

@@ -7,7 +7,7 @@ use App\ProductApi\Entity\Product;
 use App\ProductApi\Providers\RequestDtoToProductEntityProvider;
 use App\ProductApi\Service\ProductService;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
@@ -56,35 +56,35 @@ class ProductsController
 //    }
 
     #[Route(path: '/products/list', name: 'get_products')]
-    public function getProducts()
+    public function getProducts(): JsonResponse
     {
         $productList = $this->productService->getProductList();
-        return new Response(json_encode($productList));
+        return new JsonResponse($productList);
 
     }
 
     #[Route(path: '/products/create', name: 'create_product')]
     public function createProduct(
         #[MapRequestPayload] ProductRequestDto $productReview
-        ): Response
+        ): JsonResponse
     {
 
         $errors = $this->validator->validate($productReview);
 
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-                return new Response($errorsString);
+                return new JsonResponse($errorsString);
             }
 
         $product = $this->productService->createProduct($productReview);
-        return new Response('Saved new product with id ' . $product->getId());
+        return new JsonResponse('Saved new product with id ' . $product->getId());
     }
 
     #[Route(path: '/products/{code}', name: 'get_product_by_code')]
-    public function getProductByCode(string $code)
+    public function getProductByCode(string $code) : JsonResponse
     {
         $productList = $this->productService->getProductByCode($code);
-        return new Response(json_encode($productList));
+        return new  JsonResponse($productList);
 
     }
 }

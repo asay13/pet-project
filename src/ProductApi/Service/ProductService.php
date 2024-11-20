@@ -30,7 +30,11 @@ class ProductService
         return $product;
     }
 
-    public function getProductList() :ProductListResponseDto|ExceptionDto
+    /**
+     * @return ProductListResponseDto
+     * @throws \Exception
+     */
+    public function getProductList() :ProductListResponseDto
     {
         $productList = $this->managerRegistry->getRepository(Product::class)->findAll();
         $provider = new ProductToResponseDtoProvider();
@@ -41,9 +45,15 @@ class ProductService
         if (!empty($arrProductList)) {
             return new ProductListResponseDto($arrProductList);
         }
-        return new ExceptionDto("Продукты не найдены");
+        throw new \Exception("Продукты не найдены");
     }
-    public function getProductByCode(string $code) :ProductResponseDto|ExceptionDto
+
+    /**
+     * @param string $code
+     * @return ProductResponseDto
+     * @throws \Exception
+     */
+    public function getProductByCode(string $code) :ProductResponseDto
     {
         $product = $this->managerRegistry->getRepository(Product::class)
             ->findOneBy(['code' => $code]);
@@ -52,6 +62,6 @@ class ProductService
         if (!empty($product)) {
             return $provider->provide($product);
         }
-       return new ExceptionDto("Продукт не был найден");
+        throw new \Exception('Продукт не был найден');
     }
 }
