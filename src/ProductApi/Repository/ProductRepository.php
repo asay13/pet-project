@@ -11,9 +11,18 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
+    private ManagerRegistry $registry;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+        $this->registry = $registry;
+    }
+
+    public function add(Product $product): void
+    {
+        $entityManager = $this->registry->getManager();
+        $entityManager->persist($product);
+        $entityManager->flush();
     }
 
     //    /**

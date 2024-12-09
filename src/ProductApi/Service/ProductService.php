@@ -8,14 +8,15 @@ use App\ProductApi\Dto\ProductResponseDto;
 use App\ProductApi\Entity\Product;
 use App\ProductApi\Providers\ProductToResponseDtoProvider;
 use App\ProductApi\Providers\RequestDtoToProductEntityProvider;
+use App\ProductApi\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ProductService
 {
-    private ManagerRegistry $managerRegistry;
-    public function __construct(ManagerRegistry $managerRegistry)
+    private ProductRepository $productRepository;
+    public function __construct(ProductRepository $productRepository)
     {
-        $this->managerRegistry = $managerRegistry;
+        $this->productRepository = $productRepository;
     }
 
     public function createProduct(
@@ -24,9 +25,7 @@ class ProductService
     {
         $provider = new RequestDtoToProductEntityProvider();
         $product = $provider->provide($productReview);
-        $entityManager = $this->managerRegistry->getManager();
-        $entityManager->persist($product);
-        $entityManager->flush();
+        $this->productRepository->add($product);
         return $product;
     }
 
@@ -36,7 +35,7 @@ class ProductService
      */
     public function getProductList() :ProductListResponseDto
     {
-        $productList = $this->managerRegistry->getRepository(Product::class)->findAll();
+        $productList = $this->productRepository->findAll();
         $provider = new ProductToResponseDtoProvider();
         $arrProductList = [];
         foreach ($productList as $product){
@@ -55,8 +54,7 @@ class ProductService
      */
     public function getProductByCode(string $code) :ProductResponseDto
     {
-        $product = $this->managerRegistry->getRepository(Product::class)
-            ->findOneBy(['code' => $code]);
+        $product = $this->productRepository->findOneBy(['code' => $code]);
         $provider = new ProductToResponseDtoProvider();
 
         if (!empty($product)) {

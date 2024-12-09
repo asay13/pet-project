@@ -12,6 +12,8 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\ProductApi\Message\PriceUpdateMessage;
 
 #[AsController]
 class ProductsController
@@ -28,32 +30,7 @@ class ProductsController
         $this->validator = $validator;
         $this->productService = $productService;
     }
-//    #[Route(path: '/test-products', name: 'test_products')]
-//    public function test()
-//    {
-//        try {
-//            $host = 'empty-symfony-database-1';
-//            $port = 5432;
-//            $dbname = 'app';
-//            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
-//            $username = 'app';
-//            $passwd = '!ChangeMe!';
-//            $dbconn = new \PDO($dsn, $username, $passwd);
-//        } catch (\PDOException $e) {
-//            print "Error!: " . $e->getMessage() . "<br />";
-//        }
-//        // Выполним тестовый SQL запрос
-//        try {
-//            $sql = 'Select * FROM pg_database';
-//            echo '<pre>';
-//
-//            foreach ($dbconn->query($sql) as $row) {
-//                print_r($row);
-//            }
-//        } catch (\PDOException $e) {
-//            print "Error!: " . $e->getMessage() . "<br />";
-//        }
-//    }
+
 
     #[Route(path: '/products/list', name: 'get_products')]
     public function getProducts(): JsonResponse
@@ -85,6 +62,12 @@ class ProductsController
     {
         $productList = $this->productService->getProductByCode($code);
         return new  JsonResponse($productList);
+
+    }
+
+    #[Route(path: '/products/update', name: 'get_product_by_code')]
+    public function updatePrices()
+    {
 
     }
 }
